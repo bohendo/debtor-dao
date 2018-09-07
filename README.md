@@ -10,6 +10,59 @@
  - write a happy-path test
  - update the alchemy frontend to allow proposing deb fundraisers
 
+## User Story
+ - someone buys equity
+ - equity holder stakes equity to get rep
+ - rep holder proposes crowdfunding via debt with parameters x, y, z..
+ - rep holders vote on & pass crowdfunding proposal
+ - avatar activates crowdlending scheme:
+   - calls fillDebtOrder to create empty debt token
+   - debt token transferred to crowdlending token registry
+   - crowdfunding tokens become available for sale
+ - creditor buys crowdfunding tokens to effectively loan money to the DAO
+ - rep holders vote on how the loaned money is spent, hopefully in a way to generate profit
+ - DAO brings in profit
+ - global constraint prevents these profits from going to dividends while the DAO has outstanding debt
+ - after loans are repaid, profit gets paid to equity holders as dividends
+
+## Actors
+- Tokens: native to the DAO
+- Avatar: represents account of DAO and this address would hold its assets
+- Reputation: decision power in DAO and can be granted/taken away by DAO
+- Creditor: address from which money will be lent
+- Equity holder: address which may purchase equity tokens
+- Reputation Holder
+
+## Actions
+
+**Equity Holder**:
+ - buy equity token
+ - lock equity token to earn rep
+
+**Rep holder**
+ - propose crowdfunded debt parameters:
+   - how much principal
+   - principal token
+   - terms contract
+   - terms contract parameters
+   - interest rate
+   - debt order expiration
+ - vote on proposals for spending funds
+
+**DAO Schemes**
+ - activate crowdfunded debt order
+   - fillDebtOrder w DAO avatar as both debtor & creditor.
+   - mint crowdLendingTokens equal to how much principal is available.
+
+**Constraints**
+ - equity holders don't get paid until all debt has been repaid
+ - maximum number of equity token
+
+# Questions
+ - Can a scheme execute multiple transactions?
+ - Which contracts are deployed for Genesis Alpha? Are all the arc contracts already deployed?
+
+
 ---
 
 # DAOstack Starter Template
