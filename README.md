@@ -1,3 +1,17 @@
+# Work done so far
+
+ - Copy daostack hacker kit's starter template
+ - Copy dharma loans from github.com/dharmaprotocol/charta into contracts/dharma
+ - Copy alchemy frontend from github.com/daostack/alchemy into src/
+
+**TODO**:
+ - Get all this copy/pasted code running w/out error
+ - build a crowdlending scheme like [here](https://github.com/daostack/DAOstack-Hackers-Kit/blob/master/peepeth-dao-example/contracts/PeepScheme.sol)
+ - write a happy-path test
+ - update the alchemy frontend to allow proposing deb fundraisers
+
+---
+
 # DAOstack Starter Template
 
 This is a basic template you can use for kickstarting your project using the DAOstack platform.
