@@ -1,0 +1,209 @@
+.createProposalWrapper {
+  width: 450px;
+  border-radius: 3px;
+  background-color: $white;
+  position: fixed;
+  bottom: 20px;
+  right: 97px;
+  box-shadow: $shadow-3;
+
+  h2 {
+    background-color: rgba(75, 75, 75, 1.000);
+    position: relative;
+    margin: 0;
+    padding: 0;
+    color: $white;
+    height: 40px;
+    opacity: 1;
+    font-family: $body-font;
+    font-weight: $normal;
+
+    span {
+      position: relative;
+      top: -15px;
+      font-size: $body;
+      font-weight: bold;
+    }
+    .editIcon {
+      display: inline-block;
+      margin: 10px;
+    }
+    .exitProposalCreation {
+      cursor: pointer;
+      background-color: black;
+      width: 42px;
+      height: 42px;
+      transform: rotate(45deg);
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      border: none;
+
+      img {
+        transform: rotate(-45deg);
+      }
+    }
+  }
+  form {
+    padding: 0 30px 30px 30px;
+    label {
+      color: $black-halftone;
+      display: block;
+      width: 372px;
+      font-size: $small;
+      text-transform: uppercase;
+      padding: 5px 0 0 0;
+      position: relative;
+      
+      .infoTooltip {
+        position: absolute;
+        right: 0;
+        display: none;
+        right: -17px;
+      }
+    }
+    input {
+      margin-top: 20px;
+      width: 388px;
+      display: block;
+      border: none;
+      background-color: transparent;
+      border-bottom: 2px solid rgba(75, 75, 75, 1.000);
+      font-size: $subheader;
+      padding: 8px 0;
+      font-family: $body-font;
+      &.error {
+        border-bottom: 2px solid red;
+      }
+      &:focus {
+        outline: none;
+        border-bottom: 2px solid rgba(46, 168, 122, 1.000);
+      }
+    }
+    .errorMessage {
+      position: relative;
+      left: 10px;
+      color: red
+    }
+
+    .errorMessage.someReward {
+      display: block;
+      text-align: center;
+      text-transform: uppercase;
+      left: 0;
+      font-size: $small;
+    }
+    .addTransfer {
+      background-color: rgba(247, 247, 247, 1.000);
+      width: 100%;
+      position: relative;
+      left: -30px;
+      padding: 1px 30px 30px 30px;
+      margin-top: 30px;
+    }
+  }
+  .recommendedTemplate {
+    border: 1px solid rgba(56, 175, 244, .2);
+    color: rgba(34, 167, 243, 1.000);
+    font-size: $small;
+    border-radius: 3px;
+    position: relative;
+    top: 0px;
+    left: 10px;
+    margin-right: 10px;
+    padding: 1px;
+  }
+  .transactionList {
+    padding: 30px 0;
+    .transactionListHeader {
+      font-size: $body;
+      font-weight: $normal;
+      color: $black-halftone;
+      position: relative;
+      margin: 0;
+      span {
+        color: $black-thirdtone;
+        position: absolute;
+        right: 0;
+        font-size: $small;
+      }
+    }
+    table {
+      font-size: $caption;
+      width: 100%;
+      border-top: $gray-border-halftone;
+      border-spacing: 0;
+      margin-top: 12px;
+      color: $black-halftone;
+      td {
+        padding: 8px 0;
+        border-spacing: 0;
+        border-collapse: collapse;
+        border-bottom: $gray-border-halftone;
+      }
+    }
+    .tokenAmount {
+      color: $accent-1;
+      font-weight: $bold;
+    }
+    .userAvatar {
+      height: 20px;
+      position: relative;
+      top: 5px;
+      margin: 0 8px;
+      margin-top: -6px;
+    }
+    .transferIcon {
+      margin-left: 8px;
+    }
+    .transferTotals {
+      text-align: right;
+    }
+  }
+  .submitProposal {
+    border: 1px solid $accent-4;
+    height: 40px;
+    display: inline-block;
+    line-height: 30px;
+    margin: 0 auto;
+    color: $accent-4;
+    font-weight: normal;
+    font-size: $body;
+    padding: 0 15px;
+    font-family: $body-font;
+    transition: all .25s ease;
+    background-color: rgba(200,200,200,0);
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    img {
+      position: relative;
+      top: 4px;
+      margin-right: 8px;
+    }
+
+    .loading {  
+      width: 18px;
+      display: none;
+    }
+  }
+  .submitProposal:disabled .loading {
+    display: inline-block;
+  }
+
+  .submitProposal:disabled {
+    background-color: rgba(200,200,200,.5);
+    border: 1px solid rgba(200,200,200,1);
+    color: rgba(75,75,75,1);
+  }
+
+  .submitProposal:disabled .sendIcon {
+    display: none;
+  }
+  .alignCenter {
+    text-align: center;
+    margin-top: 30px;
+  }
+}
