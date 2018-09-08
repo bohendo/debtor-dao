@@ -19,7 +19,7 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
     );
 
     struct DebtProposal {
-        bytes32 TermsParameter;
+        bytes32 termsParameter;
         address proposer;
         address principalToken;
         uint principalAmount;
@@ -36,7 +36,7 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
 
     function setParameters(
         bytes32 voteApproveParams,
-        IntVoteInterface _intVate
+        IntVoteInterface _intVote
     )
     public
     {
@@ -45,17 +45,30 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
     }
 
     function proposeDebt(
-        bytes32 TermsParameter
+        address avatar,
+        bytes32 termsParameter,
         address principalToken,
-        uint PrincipalAmount,
-        uint reputationChange,
+        uint principalAmount,
+        uint reputationChange
     ) 
     public
     returns(bytes32)
     {
         bytes32 proposalId = controllerParam.intVote.propose(
-            
+           3,
+           controllerParam.voteApproveParams,
+           avatar,
+           ExecutableInterface(this),
+           msg.sender
         );
+
+        DebtProposal memory proposal = DebtProposal({
+            termsParameter: termsParameter,
+            proposer: msg.sender,
+            principalToken: principalToken,
+            principalAmount: principalAmount,
+            reputationChange: reputationChange
+        });
         emit NewDebtProposed(msg.sender, proposalId, reputationChange);
     }
 
