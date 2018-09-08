@@ -20,7 +20,6 @@ pragma solidity 0.4.24;
 
 // Internal dependencies.
 import "./DebtRegistry.sol";
-//import "./ERC165.sol";
 import { PermissionsLib, PermissionEvents } from "./PermissionsLib.sol";
 
 // External dependencies.
