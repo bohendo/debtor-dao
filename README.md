@@ -121,22 +121,13 @@ Enter the project folder from the terminal/cmd, then type:
 
 ```
 npm install
-npm install -g nps
-npm explore @daostack/arc.js -- npm start ganache
+npm run chain
 ```
 
 Then, open a different terminal window (but still in your project folder) and type:
 
 ```
-npm explore @daostack/arc.js -- npm start migrateContracts
-rm -rf build
-truffle migrate
+npm test
 ```
 
-To compile the Node files use this command:
-
-```
-npx webpack --config webpack.config.js
-```
-
-Now you can go ahead and open your `index.html` file in a web browser and start using your dapp.
+You should see two passing tests
