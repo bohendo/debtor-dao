@@ -131,3 +131,15 @@ npm test
 ```
 
 You should see two passing tests
+
+To deploy the contracts to ganache (in your project folder):
+
+```
+./node_modules/.bin/truffle migrate
+```
+
+To deploy the contracts to Robsten (in your project folder)
+
+```
+./node_modules/.bin/truffle migrate --network robsten
+```
