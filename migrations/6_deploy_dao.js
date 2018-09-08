@@ -12,17 +12,14 @@ const GAS_LIMIT = 5900000;
 
 // Organization parameters:
 // The DAO name
-const orgName = "Peepeth DAO";
+const orgName = "Debtor DAO";
 // The DAO's token name
-const tokenName = "Peepeth DAO Token";
+const tokenName = "Debtor DAO Token";
 // Token symbol
-const tokenSymbol = "PDT";
-// The ethereum addresses of the "founders"
-// TODO: list your accounts to givve initial reputation to
+const tokenSymbol = "DDT";
+// TODO: list founder accounts to givve initial reputation to
 var founders;
 // TODO: list the token amount per founder account
-// In this example the tokens aren't relevant
-// NOTE: the important thing is to make sure the array length match the number of founders
 var foundersTokens;
 // TODO: list the reputation amount per founder account
 var foundersRep;
@@ -33,24 +30,61 @@ var CrowdLendSchemeInstance;
 
 module.exports = async function(deployer) {
 
-  deployer
+    deployer
     .deploy(ControllerCreator, { gas: GAS_LIMIT })
     .then(async function() {
-      var controllerCreator = await ControllerCreator.deployed();
-      await deployer.deploy(DaoCreator, controllerCreator.address);
-      var daoCreatorInst = await DaoCreator.deployed(controllerCreator.address);
-      // Create DAO:
+        var controllerCreator = await ControllerCreator.deployed();
+        await deployer.deploy(DaoCreator, controllerCreator.address);
+        var daoCreatorInst = await DaoCreator.deployed(controllerCreator.address);
+        // Create DAO:
 
-      // Set the debtorDao contract address to use
-      var debtorDaoAddress = "0x0000000000000000000000000000000000000000";
+        founders = [web3.eth.accounts[0]];
+        foundersTokens = [web3.toWei(0)];
+        foundersRep = [web3.toWei(10)]; 
 
-      await deployer.deploy(CrowdLendScheme, debtorDaoAddress);
-      CrowdLendSchemeInstance = await CrowdLendScheme.deployed();
+        var returnedParams = await daoCreatorInst.forgeOrg(
+            orgName,
+            tokenName,
+            tokenSymbol,
+            founders,
+            foundersTokens, // Founders token amounts
+            foundersRep, // FFounders initial reputation
+            0, // 0 because we don't use a UController
+            0, // no token cap
+            { gas: GAS_LIMIT }
+        );
+
+        AvatarInst = await Avatar.at(returnedParams.logs[0].args._avatar); // Gets the Avatar address
+
+        var ControllerInst = await Controller.at(await AvatarInst.owner()); // Gets the controller address
+        var reputationAddress = await ControllerInst.nativeReputation(); // Gets the reputation contract address
+
+        // Deploy AbsoluteVote Voting Machine:
+        await deployer.deploy(AbsoluteVote);
+
+        AbsoluteVoteInst = await AbsoluteVote.deployed();
+
+        // Set the voting parameters for the Absolute Vote Voting Machine
+        await AbsoluteVoteInst.setParameters(reputationAddress, votePrec, true);
+
+        // Voting parameters and schemes params:
+        var voteParametersHash = await AbsoluteVoteInst.getParametersHash(
+            reputationAddress,
+            votePrec,
+            true
+        );
+
+
+        // Set the debtorDao contract address to use
+        var debtorDaoAddress = "0x0000000000000000000000000000000000000000";
+
+        await deployer.deploy(CrowdLendScheme, debtorDaoAddress);
+        CrowdLendSchemeInstance = await CrowdLendScheme.deployed();
 
     })
     .then(async () => {
 
-      // @note: You will need your Avatar and Voting Machine addresses to interact with them from the JS files
-      console.log("Your Debtor DAO was deployed successfuly!");
+        // @note: You will need your Avatar and Voting Machine addresses to interact with them from the JS files
+        console.log("Your Debtor DAO was deployed successfuly!");
     });
 };
