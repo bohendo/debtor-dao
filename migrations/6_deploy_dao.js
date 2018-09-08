@@ -40,7 +40,7 @@ module.exports = async function(deployer) {
 
         founders = [web3.eth.accounts[0]];
         foundersTokens = [web3.toWei(0)];
-        foundersRep = [web3.toWei(10)]; 
+        foundersRep = [web3.toWei(10)];
 
         var returnedParams = await daoCreatorInst.forgeOrg(
             orgName,
@@ -74,11 +74,10 @@ module.exports = async function(deployer) {
             true
         );
 
+        await deployer.deploy(DebtorDao);
+        DebtorDaoInstance = await DebtorDao.deployed();
 
-        // Set the debtorDao contract address to use
-        var debtorDaoAddress = "0x0000000000000000000000000000000000000000";
-
-        await deployer.deploy(CrowdLendScheme, debtorDaoAddress);
+        await deployer.deploy(CrowdLendScheme, DebtorDaoInstance.address);
         CrowdLendSchemeInstance = await CrowdLendScheme.deployed();
 
     })
