@@ -1,12 +1,12 @@
 var Avatar = artifacts.require("@daostack/arc/Avatar.sol");
 var Controller = artifacts.require("@daostack/arc/Controller.sol");
 var DaoCreator = artifacts.require("@daostack/arc/DaoCreator.sol");
-var ControllerCreator = artifacts.require(
-  "@daostack/arc/ControllerCreator.sol"
-);
+var ControllerCreator = artifacts.require("@daostack/arc/ControllerCreator.sol");
 var AbsoluteVote = artifacts.require("@daostack/arc/AbsoluteVote.sol");
 var CrowdLendScheme = artifacts.require("./dao/CrowdLendScheme.sol");
-var DebtorDao = artifacts.require("./dao/DebtorDao.sol");
+var ContractRegistry = artifacts.require("ContractRegistry");
+var DebtKernel = artifacts.require("DebtKernel");
+var RepaymentRouter = artifacts.require("RepaymentRouter");
 
 const GAS_LIMIT = 4700000;
 
@@ -71,10 +71,7 @@ module.exports = async function(deployer) {
             true
         );
 
-        await deployer.deploy(DebtorDao);
-        DebtorDaoInstance = await DebtorDao.deployed();
-
-        await deployer.deploy(CrowdLendScheme, DebtorDaoInstance.address);
+        await deployer.deploy(CrowdLendScheme, DebtKernel.address, RepaymentRouter.address);
         CrowdLendSchemeInstance = await CrowdLendScheme.deployed();
 
     })
