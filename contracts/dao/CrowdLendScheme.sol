@@ -4,6 +4,7 @@ import "@daostack/arc/contracts/universalSchemes/UniversalScheme.sol";
 import "@daostack/arc/contracts/universalSchemes/ExecutableInterface.sol";
 import "@daostack/arc/contracts/VotingMachines/IntVoteInterface.sol";
 import "@daostack/arc/contracts/controller/ControllerInterface.sol";
+import "./DebtKernelInterface.sol";
 
 contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
     event NewDebtProposed(
@@ -18,7 +19,8 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
     );
 
     struct DebtProposal {
-        bytes32 termsParameter;
+        bytes32 termsParameters;
+        address termsContract;
         address proposer;
         address principalToken;
         uint principalAmount;
@@ -30,9 +32,17 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
         IntVoteInterface intVote;
     }
 
+    address DebtKernel;
+    address RepaymentRouter;
+    address NULL_ADDRESS = address(0);
     address public debtorDaoContract;
     Parameters public controllerParam;
     mapping(bytes32=>DebtProposal) public organizationsProposals;
+
+    constructor(address _debtKernel, address _repaymentRouter) public {
+        DebtKernel = _debtKernel;
+        RepaymentRouter = _repaymentRouter;
+    }
 
     function setParameters(
         bytes32 voteApproveParams,
@@ -46,7 +56,8 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
 
     function proposeDebt(
         address avatar,
-        bytes32 termsParameter,
+        bytes32 termsParameters,
+        address termsContract,
         address principalToken,
         uint principalAmount,
         uint reputationChange
@@ -63,7 +74,8 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
         );
 
         DebtProposal memory proposal = DebtProposal({
-            termsParameter: termsParameter,
+            termsParameters: termsParameters,
+            termsContract: termsContract,
             proposer: msg.sender,
             principalToken: principalToken,
             principalAmount: principalAmount,
@@ -71,10 +83,6 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
         });
         organizationsProposals[proposalId] = proposal;
         emit NewDebtProposed(msg.sender, proposalId, reputationChange);
-    }
-
-    constructor(address _debtorDaoContract) public {
-        debtorDaoContract = _debtorDaoContract;
     }
 
     function execute(bytes32 proposalId, address avatar, int param)
@@ -87,9 +95,38 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
         if (param == 1) {
             DebtProposal memory proposal = organizationsProposals[proposalId];
 
-            ControllerInterface controller = ControllerInterface(Avatar().owner());
+            ControllerInterface controller = ControllerInterface(Avatar(avatar).owner());
             // Sends a call to the DebtKernel contract to request Dharma debt.
-            //controller.genericCall(debtKernel, abi.encodeWithSelector(), avatar);
+            controller.genericCall(
+                DebtKernel,
+                abi.encodeWithSelector(
+                    DebtKernelInterface(DebtKernel).fillDebtOrder.selector,
+                    avatar, [
+                        RepaymentRouter,
+                        avatar,
+                        NULL_ADDRESS,
+                        proposal.termsContract,
+                        proposal.principalToken,
+                        NULL_ADDRESS
+                    ],
+                    [
+                        uint8(0),
+                        uint8(0),
+                        uint8(blockhash(block.number)),
+                        uint8(proposal.principalAmount),
+                        uint8(0),
+                        uint8(0),
+                        uint8(0),
+                        uint8(0),
+                        uint8(now+1)
+                    ], 
+                    proposal.termsParameters,
+                    [uint8(0), uint8(0), uint8(0)],
+                    [bytes32(0), bytes32(0), bytes32(0)],
+                    [bytes32(0), bytes32(0), bytes32(0)]
+                ),
+                avatar
+            );
 
             // Mints reputation for the proposer of the Peep.
             require(controller.mintReputation(uint(proposal.reputationChange), proposal.proposer, avatar),
