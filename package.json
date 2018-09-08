@@ -7,6 +7,7 @@
     "test": "make test && truffle test",
     "build": "make",
     "start": "make test && bash ops/deploy.sh",
+    "watch": "./node_modules/.bin/webpack --watch --config ops/webpack.js",
     "chain": "ganache-cli --networkId 70 --accounts 20 --mnemonic \"candy maple cake sugar pudding cream honey rich smooth crumble sweet treat\""
   },
   "keywords": [

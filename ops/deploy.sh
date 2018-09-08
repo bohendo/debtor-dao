@@ -32,6 +32,7 @@ services:
     volumes:
       - letsencrypt:/etc/letsencrypt
       - devcerts:/etc/letsencrypt/devcerts
+      - `pwd`/build/public:/var/www/debtordao
     environment:
       - DOMAINNAME=$DOMAINNAME
       - EMAIL=$EMAIL
