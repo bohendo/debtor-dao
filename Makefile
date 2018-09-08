@@ -20,7 +20,7 @@ $(shell mkdir -p build)
 
 # Rules
 
-all: proxy-image
+all: migrate proxy-image
 
 test: migrate
 
