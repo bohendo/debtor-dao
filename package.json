@@ -6,11 +6,12 @@
   "scripts": {
     "compile": "truffle compile",
     "abi-gen": "abi-gen --abis './build/contracts/*.json' --out './types/generated' --template './types/contract_templates/contract.mustache' --partials './types/contract_templates/partials/*.mustache'",
-    "transpile": "rm -rf ./transpiled; copyfiles ./build/**/* ./transpiled; tsc",
+    "transpile": "rm -rf ./transpiled; copyfiles ./build/**/* ./transpiled; tsc --project ./tsconfig-test.json",
     "migrate": "truffle migrate",
     "test": "npm run compile; npm run abi-gen; npm run transpile; npm run migrate; truffle test",
     "testtest": "npm run transpile; truffle test",
-    "chain": "ganache-cli --networkId 70 --accounts 20"
+    "build": "cross-env wNODE_ENV=production webpack --config webpack.config.js",
+    "chain": "ganache-cli --networkId 70 --accounts 20 --mnemonic \"candy maple cake sugar pudding cream honey rich smooth crumble sweet treat\""
   },
   "keywords": [
     "DAO",
@@ -134,7 +135,7 @@
     "typings-for-css-modules-loader": "^1.5.0",
     "uglifyjs-webpack-plugin": "^1.2.2",
     "web3-typescript-typings": "^0.7.2",
-    "webpack": "^4.17.1",
+    "webpack": "^3.11.1",
     "webpack-cli": "^3.1.0",
     "webpack-dev-server": "^2.7.1",
     "webpack-merge": "^4.1.0",

@@ -13,7 +13,7 @@ declare global {
     function contract(name: string, test: ContractTest): void;
 
     var artifacts: Artifacts;
-    var web3: Web3;
+    var web3: any;
 
     var chaiIsConfigured: boolean;
 }
