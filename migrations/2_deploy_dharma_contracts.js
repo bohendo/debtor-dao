@@ -15,6 +15,7 @@ module.exports = (deployer, network, accounts) => {
     const TokenRegistry = artifacts.require("TokenRegistry");
     const ContractRegistry = artifacts.require("ContractRegistry");
     const Collateralizer = artifacts.require("Collateralizer");
+    const CrowdfundingTokenRegistry = artifacts.require("CrowdfundingTokenRegistry");
 
     const {
         signatories,
@@ -57,5 +58,7 @@ module.exports = (deployer, network, accounts) => {
             TokenRegistry.address,
             TokenTransferProxy.address,
         );
+        await deployer.deploy(CrowdfundingTokenRegistry, ContractRegistry.address);
+
     });
 };

@@ -15,6 +15,7 @@ src=$(shell find src -type f)
 ops=$(shell find ops -type f)
 contracts=$(shell find contracts -type f)
 tests=$(shell find test -type f)
+migrations=$(shell find migrations -type f)
 
 $(shell mkdir -p build)
 
@@ -22,7 +23,7 @@ $(shell mkdir -p build)
 
 all: proxy-image
 
-test: migrate
+test: migrate transpile
 
 clean:
 	rm -rf build/*
@@ -37,9 +38,6 @@ proxy-image: bundle.js build/index.html $(ops)
 bundle.js: node-modules webpack.js $(src) transpile
 	$(webpack) --config ./ops/webpack.js
 
-migrate: transpile
-	$(truffle) migrate
-
 transpile: abis $(tests)
 	rm -rf ./transpiled
 	$(copyfiles) ./build/**/* ./transpiled
@@ -49,6 +47,10 @@ transpile: abis $(tests)
 abis: compile
 	$(abi-gen) --abis './build/contracts/*.json' --out './types/generated' --template './types/contract_templates/contract.mustache' --partials './types/contract_templates/partials/*.mustache'
 	touch build/abis
+
+migrate: compile $(migrations)
+	$(truffle) migrate
+	touch build/migrate
 
 compile: $(contracts)
 	$(truffle) compile
