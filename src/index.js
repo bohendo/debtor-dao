@@ -1,3 +1,4 @@
+import 'babel-polyfill'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap'
 import React from 'react'
@@ -15,11 +16,6 @@ import {
   BinaryVoteResult
 } from "@daostack/arc.js";
 
-ReactDOM.render(
-    <DebtorDao />,
-    document.getElementById('root')
-);
-
 class DebtorDao extends React.Component {
     render() {
         console.log('Rendering')
@@ -29,20 +25,25 @@ class DebtorDao extends React.Component {
                 <h3>The first ever DAO on social media</h3>
                 <p id="daoAddress"></p>
                 <p id="userRep"></p>
-                <h4 style="margin-top: 20px; text-decoration: underline;">Propose a new Peep:</h4>
-                <input type="text" id="newPeepContent" placeholder="Please enter Peep text" style="width: 600px; height: 50px;"></input>
+                <h4 style={{ 'marginTop': '20px' , 'textDecoration': 'underline' }}>Propose a new Peep:</h4>
+                <input type="text" id="newPeepContent" placeholder="Please enter Peep text" style={{'width': '600px', 'height': '50px'}}></input>
                 <br/>
                 <input type="submit" id="proposePeepButton" value="Propose Peep"></input>
-                <h4 style="margin-top: 20px; text-decoration: underline;">Peep Proposals</h4>
-                <ul id="peepProposalList" style="list-style: none;">
+                <h4 style={{'marginTop': '20px', 'textDecoration': 'underline'}}>Peep Proposals</h4>
+                <ul id="peepProposalList" style={{'listStyle': 'none'}}>
                     <li>
-                        <span class="peepProposalText" style="margin-right:25px;">No active proposal found...</span>
+                        <span className="peepProposalText" style={{"marginRight": "25px"}}>No active proposal found...</span>
                     </li>
                 </ul>
             </div>
         );  
     }   
 }
+
+ReactDOM.render(
+    <DebtorDao />,
+    document.getElementById('root')
+);
 
 // Import the JSON file of our CrowdLendScheme
 const crowdLendSchemeArtifacts = require("../build/contracts/CrowdLendScheme.json");
@@ -58,7 +59,7 @@ let CrowdLendScheme = contract(crowdLendSchemeArtifacts);
 const avatarAddress = "0xf81588ecd485cba1e7d27ae149f56767f8a07e30";
 const votingMachineAddress = "0x9de9beb3518afe870e6585f7890751bbabc3c02c";
 
-var debtorDaoDAO;
+var debtorDao;
 var debtorDaoScheme;
 var votingMachine;
 var userRep;
@@ -90,9 +91,9 @@ async function initialize() {
     window.location.reload();
   });
 
-  debtorDaoDAO = await DAO.at(avatarAddress);
+  debtorDao = await DAO.at(avatarAddress); // this is undefined, oops
 
-  const daoSchemes = await debtorDaoDAO.getSchemes(); // Returns all the schemes your DAO is registered to
+  const daoSchemes = await debtorDao.getSchemes(); // Returns all the schemes your DAO is registered to
   const debtorDaoSchemeAddress = daoSchemes[0].address; // Since our DAO has only 1 scheme it will be the first one
 
   CrowdLendScheme.setProvider(web3.currentProvider); // Sets the Web3 Provider for a non-ArcJS contract
@@ -110,7 +111,7 @@ async function initialize() {
   // Gets the user reputation and the total reputation supply
   var userAccount = web3.eth.accounts[0];
   userRep = await getUserReputation(userAccount);
-  totalRep = web3.fromWei(await debtorDaoDAO.reputation.getTotalSupply());
+  totalRep = web3.fromWei(await debtorDao.reputation.getTotalSupply());
 
   $("#userRep").text(
     "Your Reputation: " + userRep + " rep (" + (userRep / totalRep) * 100 + "%)"
@@ -214,7 +215,7 @@ function downvoteCrowdLend(proposalId) {
 async function getUserReputation(account) {
   // Gets a list of the DAO participants with their reputation
   // Here we filter the list to get only the user account
-  var participants = await debtorDaoDAO.getParticipants({
+  var participants = await debtorDao.getParticipants({
     participantAddress: account,
     returnReputations: true
   });
