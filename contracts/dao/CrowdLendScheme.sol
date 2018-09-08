@@ -4,7 +4,6 @@ import "@daostack/arc/contracts/universalSchemes/UniversalScheme.sol";
 import "@daostack/arc/contracts/universalSchemes/ExecutableInterface.sol";
 import "@daostack/arc/contracts/VotingMachines/IntVoteInterface.sol";
 import "@daostack/arc/contracts/controller/ControllerInterface.sol";
-import "./DebtorDaoInterface.sol";
 
 contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
     event NewDebtProposed(
@@ -33,6 +32,7 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
 
     address public debtorDaoContract;
     Parameters public controllerParam;
+    mapping(bytes32=>DebtProposal) public organizationsProposals;
 
     function setParameters(
         bytes32 voteApproveParams,
@@ -69,18 +69,37 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
             principalAmount: principalAmount,
             reputationChange: reputationChange
         });
+        organizationsProposals[proposalId] = proposal;
         emit NewDebtProposed(msg.sender, proposalId, reputationChange);
+    }
+
+    constructor(address _debtorDaoContract) public {
+        debtorDaoContract = _debtorDaoContract;
     }
 
     function execute(bytes32 proposalId, address avatar, int param)
     public
     returns(bool)
     {
+        require(controllerParam.intVote == msg.sender, "Only the voting machine can execute proposal");
+
+        // Check if vote was successful:
+        if (param == 1) {
+            DebtProposal memory proposal = organizationsProposals[proposalId];
+
+            ControllerInterface controller = ControllerInterface(Avatar().owner());
+            // Sends a call to the DebtKernel contract to request Dharma debt.
+            //controller.genericCall(debtKernel, abi.encodeWithSelector(), avatar);
+
+            // Mints reputation for the proposer of the Peep.
+            require(controller.mintReputation(uint(proposal.reputationChange), proposal.proposer, avatar),
+            "Failed to mint reputation to proposer"
+            );
+        } else {
+            delete organizationsProposals[proposalId];
+        }
+
         emit ProposalExecuted(proposalId, param);
         return true;
-    }
-
-    constructor(address _debtorDaoContract) public {
-        debtorDaoContract = _debtorDaoContract;
     }
 }
