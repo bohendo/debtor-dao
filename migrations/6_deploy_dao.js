@@ -8,7 +8,7 @@ var AbsoluteVote = artifacts.require("@daostack/arc/AbsoluteVote.sol");
 var CrowdLendScheme = artifacts.require("./dao/CrowdLendScheme.sol");
 var DebtorDao = artifacts.require("./dao/DebtorDao.sol");
 
-const GAS_LIMIT = 5900000;
+const GAS_LIMIT = 4700000;
 
 // Organization parameters:
 // The DAO name
