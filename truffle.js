@@ -1,3 +1,6 @@
+var HDWalletProvider = require("truffle-hdwallet-provider");
+var mnemonic = "name leader inject era mother cotton violin baby disorder hip century earn";
+
 module.exports = {
   networks: {
     development: {
@@ -6,6 +9,12 @@ module.exports = {
       network_id: "*",
       gas: 4800000,
       gasPrice: 1
+    },
+    ropsten: {
+      provider: function() {
+        return new HDWalletProvider(mnemonic, "https://ropsten.infura.io/v3/ddb039b0754f4645a34ba26c71a1fdde")
+      },
+      network_id: 3
     }
   },
   test_directory: "transpiled/test",
