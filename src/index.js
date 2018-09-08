@@ -1,3 +1,9 @@
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap'
+import React from 'react'
+import ReactDOM from 'react-dom'
+import $ from 'jquery'
+
 import {
   InitializeArcJs,
   LoggingService,
@@ -8,6 +14,35 @@ import {
   WrapperService,
   BinaryVoteResult
 } from "@daostack/arc.js";
+
+ReactDOM.render(
+    <DebtorDao />,
+    document.getElementById('root')
+);
+
+class DebtorDao extends React.Component {
+    render() {
+        console.log('Rendering')
+        return (
+            <div>
+                <h1>Welcome to the Peep DAO Demo!</h1>
+                <h3>The first ever DAO on social media</h3>
+                <p id="daoAddress"></p>
+                <p id="userRep"></p>
+                <h4 style="margin-top: 20px; text-decoration: underline;">Propose a new Peep:</h4>
+                <input type="text" id="newPeepContent" placeholder="Please enter Peep text" style="width: 600px; height: 50px;"></input>
+                <br/>
+                <input type="submit" id="proposePeepButton" value="Propose Peep"></input>
+                <h4 style="margin-top: 20px; text-decoration: underline;">Peep Proposals</h4>
+                <ul id="peepProposalList" style="list-style: none;">
+                    <li>
+                        <span class="peepProposalText" style="margin-right:25px;">No active proposal found...</span>
+                    </li>
+                </ul>
+            </div>
+        );  
+    }   
+}
 
 // Import the JSON file of our CrowdLendScheme
 const crowdLendSchemeArtifacts = require("../build/contracts/CrowdLendScheme.json");
