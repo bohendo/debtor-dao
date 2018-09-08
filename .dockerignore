@@ -1,0 +1,4 @@
+transpiled/
+node_modules/
+types/generated/
+*.swp

@@ -10,7 +10,8 @@
     "migrate": "truffle migrate",
     "test": "npm run compile; npm run abi-gen; npm run transpile; npm run migrate; truffle test",
     "testtest": "npm run transpile; truffle test",
-    "build": "cross-env wNODE_ENV=production webpack --config webpack.config.js",
+    "build": "make",
+    "start": "bash ops/deploy.sh",
     "chain": "ganache-cli --networkId 70 --accounts 20 --mnemonic \"candy maple cake sugar pudding cream honey rich smooth crumble sweet treat\""
   },
   "keywords": [
