@@ -7,7 +7,6 @@ RUN apk add --update --no-cache openssl certbot nginx iputils && \
 
 COPY ./ops/proxy.conf /etc/nginx/nginx.conf
 COPY ./ops/proxy.entry.sh /root/entry.sh
-COPY ./build/index.html /var/www/debtor-dao/
-COPY ./build/bundle.js /var/www/debtor-dao/
+COPY ./build/public /var/www/debtor-dao/
 
 ENTRYPOINT ["sh", "/root/entry.sh"]

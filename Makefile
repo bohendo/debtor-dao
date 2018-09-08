@@ -3,7 +3,7 @@
 project=debtordao
 proxy_image="$(project)_proxy"
 
-VPATH=src:ops:build
+VPATH=src:ops:build:build/public:build/public/js
 
 webpack=node_modules/.bin/webpack
 truffle=node_modules/.bin/truffle
@@ -16,7 +16,7 @@ ops=$(shell find ops -type f)
 contracts=$(shell find contracts -type f)
 tests=$(shell find test -type f)
 
-$(shell mkdir -p build)
+$(shell mkdir -p build/public/js)
 
 # Rules
 
@@ -30,15 +30,17 @@ clean:
 push: proxy-image
 	docker push bohendo/$(proxy_image)
 
-proxy-image: bundle.js build/index.html $(ops)
+proxy-image: bundle.js $(ops)
 	docker build -f ops/proxy.Dockerfile -t $(proxy_image) .
 	touch build/proxy-image
 
 bundle.js: node-modules webpack.js $(src) transpile
 	$(webpack) --config ./ops/webpack.js
+	cp -r public/* build/public/
 
 migrate: transpile
 	$(truffle) migrate
+	touch build/migrate
 
 transpile: abis $(tests)
 	rm -rf ./transpiled
