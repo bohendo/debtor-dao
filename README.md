@@ -89,6 +89,18 @@ The structure is basically as follows:
 
 # Running your project.
 
+Install node using node version manager
+
+For MacOS
+
+```
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
+nvm install node
+nvm use node
+```
+
+If you are having troubles with the nvm installation, look no further than here: https://github.com/creationix/nvm/blob/master/README.md#install-script
+
 To run your project on a local testnet:
 
 Enter the project folder from the terminal/cmd, then type:
