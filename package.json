@@ -4,14 +4,9 @@
   "description": "https://github.com/ethberlin-hackathon/ETHBerlin-Teambuilding/issues/38",
   "private": true,
   "scripts": {
-    "compile": "truffle compile",
-    "abi-gen": "abi-gen --abis './build/contracts/*.json' --out './types/generated' --template './types/contract_templates/contract.mustache' --partials './types/contract_templates/partials/*.mustache'",
-    "transpile": "rm -rf ./transpiled; copyfiles ./build/**/* ./transpiled; tsc --project ./tsconfig-test.json",
-    "migrate": "truffle migrate",
-    "test": "npm run compile; npm run abi-gen; npm run transpile; npm run migrate; truffle test",
-    "testtest": "npm run transpile; truffle test",
+    "test": "make test && truffle test",
     "build": "make",
-    "start": "bash ops/deploy.sh",
+    "start": "make test && bash ops/deploy.sh",
     "chain": "ganache-cli --networkId 70 --accounts 20 --mnemonic \"candy maple cake sugar pudding cream honey rich smooth crumble sweet treat\""
   },
   "keywords": [
