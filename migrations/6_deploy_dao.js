@@ -30,6 +30,10 @@ var CrowdLendSchemeInstance;
 
 module.exports = async function(deployer) {
 
+    founders = [web3.eth.accounts[0]];
+    foundersTokens = [web3.toWei(0)];
+    foundersRep = [web3.toWei(10)];
+
     deployer
     .deploy(ControllerCreator, { gas: GAS_LIMIT })
     .then(async function() {
@@ -37,11 +41,6 @@ module.exports = async function(deployer) {
         await deployer.deploy(DaoCreator, controllerCreator.address);
         var daoCreatorInst = await DaoCreator.deployed(controllerCreator.address);
         // Create DAO:
-
-        founders = [web3.eth.accounts[0]];
-        foundersTokens = [web3.toWei(0)];
-        foundersRep = [web3.toWei(10)];
-
         var returnedParams = await daoCreatorInst.forgeOrg(
             orgName,
             tokenName,
@@ -53,9 +52,7 @@ module.exports = async function(deployer) {
             0, // no token cap
             { gas: GAS_LIMIT }
         );
-
         AvatarInst = await Avatar.at(returnedParams.logs[0].args._avatar); // Gets the Avatar address
-
         var ControllerInst = await Controller.at(await AvatarInst.owner()); // Gets the controller address
         var reputationAddress = await ControllerInst.nativeReputation(); // Gets the reputation contract address
 
@@ -81,8 +78,7 @@ module.exports = async function(deployer) {
         CrowdLendSchemeInstance = await CrowdLendScheme.deployed();
 
     })
-    .then(async () => {
-
+    .then(async function() {
         // @note: You will need your Avatar and Voting Machine addresses to interact with them from the JS files
         console.log("Your Debtor DAO was deployed successfuly!");
     });
