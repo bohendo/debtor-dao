@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.24;
 
 /// Taken from Giveth's MiniMeToken: https://github.com/Giveth/minime
 contract Controlled {

@@ -1,11 +1,11 @@
-pragma solidity 0.4.18;
+pragma solidity 0.4.24;
 
 import "zeppelin-solidity/contracts/token/ERC721/ERC721Receiver.sol";
 
-import "../ContractRegistry.sol";
-import "../DebtRegistry.sol";
-import "../DebtToken.sol";
-import "../TokenRegistry.sol";
+import "./ContractRegistry.sol";
+import "./DebtRegistry.sol";
+import "./DebtToken.sol";
+import "./TokenRegistry.sol";
 
 import "./CrowdfundingToken.sol";
 import "./Controlled.sol";

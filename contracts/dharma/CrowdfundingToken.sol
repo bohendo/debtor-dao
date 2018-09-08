@@ -1,11 +1,11 @@
-pragma solidity 0.4.18;
+pragma solidity 0.4.24;
 
 // External dependencies.
 import "zeppelin-solidity/contracts/token/ERC20/ERC20.sol";
-import "zeppelin-solidity/contracts/token/ERC721/ERC721Receiver.sol";
+//import "zeppelin-solidity/contracts/token/ERC721/ERC721Receiver.sol";
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
 
-import "../ContractRegistry.sol";
+import "./ContractRegistry.sol";
 
 import "./Controlled.sol";
 
@@ -14,7 +14,7 @@ contract ApproveAndCallFallBack {
 }
 
 /// Much structure taken from Giveth's MiniMeToken: https://github.com/Giveth/minime
-contract CrowdfundingToken is Controlled, ERC721Receiver {
+contract CrowdfundingToken is Controlled {
     using SafeMath for uint;
 
     /// @dev `Checkpoint` is the structure that attaches a block number to a
@@ -494,6 +494,12 @@ contract CrowdfundingToken is Controlled, ERC721Receiver {
 //////////
 // ERC721Receiver Method
 //////////
+  /**
+   * @dev Magic value to be returned upon successful reception of an NFT
+   *  Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`,
+   *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
+   */
+    bytes4 internal constant ERC721_RECEIVED = 0x150b7a02;
 
     function onERC721Received(
         address,
@@ -505,6 +511,7 @@ contract CrowdfundingToken is Controlled, ERC721Receiver {
     {
         return ERC721_RECEIVED;
     }
+
 
 ////////////////
 // Events

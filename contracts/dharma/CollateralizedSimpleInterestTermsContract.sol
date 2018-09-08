@@ -16,10 +16,10 @@
 
 */
 
-pragma solidity 0.4.18;
+pragma solidity 0.4.24;
 
 import "./SimpleInterestTermsContract.sol";
-import "../Collateralizer.sol";
+import "./Collateralizer.sol";
 
 
 /**

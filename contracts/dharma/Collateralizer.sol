@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity 0.4.18;
+pragma solidity 0.4.24;
 
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
 import "zeppelin-solidity/contracts/token/ERC20/ERC20.sol";
@@ -25,7 +25,7 @@ import "./TermsContract.sol";
 import "./DebtRegistry.sol";
 import "./TokenRegistry.sol";
 import "./TokenTransferProxy.sol";
-import { PermissionsLib, PermissionEvents } from "./libraries/PermissionsLib.sol";
+import { PermissionsLib, PermissionEvents } from "./PermissionsLib.sol";
 
 
 /**
