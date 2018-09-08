@@ -14,11 +14,4 @@ contract DebtorDAO {
         emit DebtRequested(amount);
     }
 
-    function distributeDividents(uint amount) public {
-        emit DividentsDistributed(amount);
-    }
-
-    function cashOutEquity(uint amount) public {
-        emit EquityCashed(amount);
-    }
 }
