@@ -10,4 +10,6 @@ interface DebtKernelInterface {
         bytes32[3] signaturesR,
         bytes32[3] signaturesS
     ) external returns(bytes32);
+
+    function safeTransferFrom(address _from, address _to, uint _tokenId) external;
 }

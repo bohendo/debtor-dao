@@ -34,14 +34,19 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
 
     address DebtKernel;
     address RepaymentRouter;
+    address DebtToken;
+    address CrowdfundingTokenRegistry;
+
     address NULL_ADDRESS = address(0);
     address public debtorDaoContract;
     Parameters public controllerParam;
     mapping(bytes32=>DebtProposal) public organizationsProposals;
 
-    constructor(address _debtKernel, address _repaymentRouter) public {
+    constructor(address _debtKernel, address _repaymentRouter, address _debtToken, address _crowdfundingTokenRegistry) public {
         DebtKernel = _debtKernel;
         RepaymentRouter = _repaymentRouter;
+        DebtToken = _debtToken;
+        CrowdfundingTokenRegistry = _crowdfundingTokenRegistry;
     }
 
     function setParameters(
@@ -96,12 +101,14 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
             DebtProposal memory proposal = organizationsProposals[proposalId];
 
             ControllerInterface controller = ControllerInterface(Avatar(avatar).owner());
+
             // Sends a call to the DebtKernel contract to request Dharma debt.
-            controller.genericCall(
+            bytes32 DebtTokenId = controller.genericCall(
                 DebtKernel,
                 abi.encodeWithSelector(
                     DebtKernelInterface(DebtKernel).fillDebtOrder.selector,
-                    avatar, [
+                    avatar,
+                    [
                         RepaymentRouter,
                         avatar,
                         NULL_ADDRESS,
@@ -124,6 +131,18 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
                     [uint8(0), uint8(0), uint8(0)],
                     [bytes32(0), bytes32(0), bytes32(0)],
                     [bytes32(0), bytes32(0), bytes32(0)]
+                ),
+                avatar
+            );
+
+            // Sends DebtToken to CrowdFundingRegistry
+            controller.genericCall(
+                DebtToken,
+                abi.encodeWithSelector(
+                    DebtKernelInterface(DebtToken).safeTransferFrom.selector,
+                    avatar,
+                    CrowdfundingTokenRegistry,
+                    uint256(DebtTokenId)
                 ),
                 avatar
             );
