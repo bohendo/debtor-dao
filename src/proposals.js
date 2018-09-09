@@ -22,6 +22,7 @@ class Proposals extends React.Component {
         return (
             <div>
                 <h4 style={{ 'marginTop': '20px' , 'textDecoration': 'underline' }}>All Proposals:</h4>
+                <p>{this.props.crowdlendProposals}</p>
             </div>
         );  
     }   
