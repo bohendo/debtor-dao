@@ -7,4 +7,5 @@ module.exports = (deployer, network, accounts) => {
 
     deployer.deploy(SimpleInterestTermsContract, ContractRegistry.address);
     deployer.deploy(CollateralizedSimpleInterestTermsContract, ContractRegistry.address);
+
 };
