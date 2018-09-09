@@ -3,6 +3,7 @@ var Controller = artifacts.require("@daostack/arc/Controller.sol");
 var DaoCreator = artifacts.require("@daostack/arc/DaoCreator.sol");
 var ControllerCreator = artifacts.require("@daostack/arc/ControllerCreator.sol");
 var AbsoluteVote = artifacts.require("@daostack/arc/AbsoluteVote.sol");
+var SimpleICOScheme = artifacts.require("@daostack/arc/SimpleICO.sol");
 var CrowdLendScheme = artifacts.require("./dao/CrowdLendScheme.sol");
 var ContractRegistry = artifacts.require("ContractRegistry");
 var CrowdfundingTokenRegistry = artifacts.require("CrowdfundingTokenRegistry");
@@ -58,7 +59,7 @@ module.exports = async function(deployer) {
 
         // Deploy AbsoluteVote Voting Machine:
         await deployer.deploy(AbsoluteVote);
-
+        
         AbsoluteVoteInst = await AbsoluteVote.deployed();
 
         // Set the voting parameters for the Absolute Vote Voting Machine
@@ -75,7 +76,35 @@ module.exports = async function(deployer) {
 
         await deployer.deploy(CrowdfundingTokenRegistry, contractRegistry.address);
 
+        // Deploy SimpleICO for selling crowdfundingToken
+        await deployer.deploy(SimpleICOScheme);
+
         await deployer.deploy(CrowdLendScheme, contractRegistry.address, CrowdfundingTokenRegistry.address);
+
+        SimpleICOSchemeInstance = await SimpleICOScheme.deployed();
+        CrowdLendSchemeInstance = await CrowdLendScheme.deployed();
+
+        await CrowdLendSchemeInstance.setParameters(
+            voteParametersHash,
+            AbsoluteVoteInst.address
+        );
+
+        var schemeCrowdLendInstance = await CrowdLendSchemeInstance.getParametersHash(
+            voteParametersHash,
+            AbsoluteVoteInst.address
+        );
+
+        var schemesArray = [CrowdLendSchemeInstance.address]; // The address of the scheme
+        const paramsArray = [schemeCrowdLendInstance]; // Defines which parameters should be grannted in the scheme
+        const permissionArray = ["0x00000010"]; 
+
+        // set the DAO's initial schmes:
+        await daoCreatorInst.setSchemes(
+            AvatarInst.address,
+            schemesArray,
+            paramsArray,
+            permissionArray
+        ); // Sets the scheme in our DAO controller by using the DAO Creator we used to forge our DAO
 
     })
     .then(async function() {

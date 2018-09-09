@@ -22,6 +22,7 @@ interface DebtToken {
 
 interface CrowdfundingToken {
     function generateTokens(address _owner, uint _amount) external returns(bool);
+    function transfer(address _to, uint256 _amount) external returns(bool);
 }
 
 interface DebtKernel {
@@ -70,6 +71,7 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
     ContractRegistry public contractRegistry;
     CrowdfundingTokenRegistry public crowdfundingTokenRegistry;
     address NULL_ADDRESS = address(0);
+    address crowdfundingToken;
 
     bytes32 DebtTokenId;
 
@@ -89,6 +91,14 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
     {
         controllerParam.voteApproveParams = voteApproveParams;
         controllerParam.intVote = _intVote;
+    }
+
+    function getParametersHash(
+        bytes32 _voteApproveParams,
+        IntVoteInterface _intVote
+    ) public pure returns(bytes32)
+    {
+        return (keccak256(abi.encodePacked(_voteApproveParams, _intVote)));
     }
 
     function proposeDebt(
@@ -120,6 +130,21 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
         });
         organizationsProposals[proposalId] = proposal;
         emit NewDebtProposed(msg.sender, proposalId, reputationChange);
+    }
+
+    function receiveDebt(address avatar) public payable {
+        if (msg.value > 0) {
+            ControllerInterface controller = ControllerInterface(Avatar(avatar).owner());
+            controller.genericCall(
+                crowdfundingToken,
+                abi.encodeWithSelector(
+                    bytes4(0xa9059cbb),
+                    msg.sender,
+                    uint(msg.value)
+                ),
+                avatar
+            );
+        }
     }
 
     function execute(bytes32 proposalId, address avatar, int param)
@@ -181,7 +206,7 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
                 avatar
             );
 
-            address crowdfundingToken = crowdfundingTokenRegistry.crowdfundingTokens(uint(DebtTokenId));
+            crowdfundingToken = crowdfundingTokenRegistry.crowdfundingTokens(uint(DebtTokenId));
 
             // Mint Crowfunding Token for sale
             controller.genericCall(
