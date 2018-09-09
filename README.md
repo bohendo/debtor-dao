@@ -146,5 +146,5 @@ In another terminal
 To deploy the contracts to Robsten (in your project folder)
 
 ```
-./node_modules/.bin/truffle migrate --network robsten
+./node_modules/.bin/truffle migrate --network ropsten
 ```
