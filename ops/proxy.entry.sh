@@ -6,7 +6,7 @@ devcerts=/etc/letsencrypt/devcerts
 mkdir -p $devcerts
 mkdir -p /etc/certs
 mkdir -p /var/www/letsencrypt
-mkdir -p /var/www/debtor-dao
+mkdir -p /var/www/debtordao
 
 if [[ -f "/etc/letsencrypt/live/$DOMAINNAME/privkey.pem" ]]
 then

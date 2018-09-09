@@ -23,6 +23,9 @@ class ProposeCrowdlend extends React.Component {
         this.handleChange = this.handleChange.bind(this);
     }
 
+    async componentDidMount() {
+    }
+
     handleChange(event) {
         const target = event.target;
         if (target.name == 'amount') {
@@ -32,10 +35,6 @@ class ProposeCrowdlend extends React.Component {
         } else if (target.name == 'interest') {
             this.setState({ interestRate: event.target.value });
         }
-    }
-
-    async componentDidMount() {
-        console.log(`crowdlend proposal did mount`)
     }
 
     render() {

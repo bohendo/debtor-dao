@@ -3,10 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap'
 import React from 'react'
 import ReactDOM from 'react-dom'
-
-import ProposeCrowdlend from './proposeCrowdlend'
-import Proposals from './proposals'
-
+import contract from 'truffle-contract'
 import {
   InitializeArcJs,
   LoggingService,
@@ -18,13 +15,19 @@ import {
   BinaryVoteResult
 } from "@daostack/arc.js";
 
+import ProposeCrowdlend from './proposeCrowdlend'
+import Proposals from './proposals'
+
+import avatarArtifacts from '../build/contracts/Avatar.json'
+import crowdlendSchemeArtifacts from '../build/contracts/CrowdLendScheme.json'
+
 class DebtorDao extends React.Component {
 
     constructor() {
         super();
         this.state ={
-            avatarAddress: "0xf81588ecd485cba1e7d27ae149f56767f8a07e30",
-            votingMachineAddress: "0x9de9beb3518afe870e6585f7890751bbabc3c02c",
+            avatarAddress: "0x028c9ceed1b38cfebf7b6a8dd772a727d43c65ff",
+            votingMachineAddress: "0x9b17714d4bca0cb6505b1b358ebef998326b6e56",
             userRep: 0,
             totalRep: 1,
             crowdlendProposals: [],
@@ -50,9 +53,10 @@ class DebtorDao extends React.Component {
     }
 
     async componentDidMount() {
+      LoggingService.logLevel = LogLevel.all;
       ConfigService.set("estimateGas", true);
-      ConfigService.set("txDepthRequiredForConfirmation.ropsten", 0);
-      ConfigService.set("network", "ropsten");
+      //ConfigService.set("txDepthRequiredForConfirmation.ropsten", 0);
+      //ConfigService.set("network", "ropsten");
 
       await InitializeArcJs({
         watchForAccountChanges: true,
@@ -65,7 +69,21 @@ class DebtorDao extends React.Component {
         }
       });
 
-      LoggingService.logLevel = LogLevel.all;
+      /*
+      const debtorDao = await DAO.at(this.state.avatarAddress)
+
+      const debtorDaoSchemes = await debtorDao.getSchemes()
+
+      const crowdlendSchemeAddress = debtorDaoSchemes[0].address
+
+      const CrowdlendScheme = contract(crowdlendSchemeArtifacts)
+      CrowdlendScheme.setProvider(web3.currentProvider)
+
+      const crowdlendScheme = await PeepScheme.at(peepSchemeAddress)
+
+      console.log(typeof crowdlendScheme)
+      */
+
       this.setState({
           userRep: await this.getUserReputation(web3.eth.accounts[0]),
           totalRep: 2,
