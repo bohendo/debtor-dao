@@ -134,6 +134,11 @@ You should see two passing tests
 
 To deploy the contracts to ganache (in your project folder):
 
+In one terminal
+```
+npm run chain
+```
+In another terminal
 ```
 ./node_modules/.bin/truffle migrate
 ```
