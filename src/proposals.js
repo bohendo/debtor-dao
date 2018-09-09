@@ -3,11 +3,10 @@ import React from 'react'
 class Proposals extends React.Component {
 
     async componentDidMount() {
-        console.log(`proposal list did mount`)
     }
 
     render() {
-        console.log(`rendering ${this.props.crowdlendProposals.length} proposals`)
+
         const listOfProposals = [];
         for (let p = 0; p <  this.props.crowdlendProposals.length; p++) {
             let proposal = this.props.crowdlendProposals[p];

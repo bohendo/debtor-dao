@@ -54,6 +54,7 @@ module.exports = async function(deployer) {
             0, // no token cap
             { gas: GAS_LIMIT }
         );
+
         AvatarInst = await Avatar.at(returnedParams.logs[0].args._avatar); // Gets the Avatar address
         var ControllerInst = await Controller.at(await AvatarInst.owner()); // Gets the controller address
         var reputationAddress = await ControllerInst.nativeReputation(); // Gets the reputation contract address
@@ -79,7 +80,8 @@ module.exports = async function(deployer) {
 
     })
     .then(async function() {
-        // @note: You will need your Avatar and Voting Machine addresses to interact with them from the JS files
         console.log("Your Debtor DAO was deployed successfuly!");
+        console.log(`Avatar Address: ${AvatarInst.address}`);
+        console.log(`VotingMachine Address: ${AbsoluteVoteInst.address}`);
     });
 };
