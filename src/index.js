@@ -19,6 +19,7 @@ import ProposeCrowdlend from './proposeCrowdlend'
 import Proposals from './proposals'
 
 import avatarArtifacts from '../build/contracts/Avatar.json'
+import votingMachineArtifacts from '../build/contracts/AbsoluteVote.json'
 import crowdlendSchemeArtifacts from '../build/contracts/CrowdLendScheme.json'
 
 class DebtorDao extends React.Component {
@@ -26,8 +27,8 @@ class DebtorDao extends React.Component {
     constructor() {
         super();
         this.state ={
-            avatarAddress: "0x028c9ceed1b38cfebf7b6a8dd772a727d43c65ff",
-            votingMachineAddress: "0x9b17714d4bca0cb6505b1b358ebef998326b6e56",
+            avatarAddress: "0x31770f01ce3c7de4b91e0b83f1002bb4020941ac",
+            votingMachineAddress: "0x09c10a9811b1018a08efd01cf5f3ef27e9e4e18a",
             userRep: 0,
             totalRep: 1,
             crowdlendProposals: [],
@@ -50,6 +51,31 @@ class DebtorDao extends React.Component {
         this.setState(prevState => ({
             crowdlendProposals: prevState.crowdlendProposals.concat(crowdlend),
         }));
+
+        console.log(`still contract? ${window.crowdlendContract}`)
+
+        const termsParameters = '0x0'
+        const termsContract = '0x0'
+        const principalToken = '0x0'
+        const principalAmount = '0x0'
+        
+        const networkId = Object.keys(crowdlendSchemeArtifacts.networks)[0];
+        const crowdlendAddress = crowdlendSchemeArtifacts.networks[networkId].address;
+
+        const crowdlendContract = web3.eth.contract(crowdlendSchemeArtifacts.abi).at(crowdlendAddress);
+
+        console.log(Object.keys(crowdlendContract.proposeDebt))
+
+        const data = crowdlendContract.proposeDebt(
+            this.state.avatarAddress,
+            termsParameters,
+            termsContract,
+            principalToken,
+            principalAmount,
+            1,
+            (err, res) => { console.log(`err: ${err}, res: ${res}`) }
+        )
+
     }
 
     async componentDidMount() {
@@ -58,6 +84,7 @@ class DebtorDao extends React.Component {
       //ConfigService.set("txDepthRequiredForConfirmation.ropsten", 0);
       //ConfigService.set("network", "ropsten");
 
+      console.log('tick')
       await InitializeArcJs({
         watchForAccountChanges: true,
         filter: {
@@ -68,29 +95,23 @@ class DebtorDao extends React.Component {
           Controller: true
         }
       });
+      console.log('tock')
 
-      /*
-      const debtorDao = await DAO.at(this.state.avatarAddress)
+      var CrowdlendScheme = contract(crowdlendSchemeArtifacts);
+      var AvatarScheme = contract(avatarArtifacts);
+      var VotingMachine = contract(votingMachineArtifacts);
 
-      const debtorDaoSchemes = await debtorDao.getSchemes()
 
-      const crowdlendSchemeAddress = debtorDaoSchemes[0].address
+      const networkId = Object.keys(crowdlendSchemeArtifacts.networks)[0]
+      window.crowdlendContract = CrowdlendScheme.at(crowdlendSchemeArtifacts.networks[networkId].address);
 
-      const CrowdlendScheme = contract(crowdlendSchemeArtifacts)
-      CrowdlendScheme.setProvider(web3.currentProvider)
-
-      const crowdlendScheme = await debtorDaoSchemes.at(crowdlendSchemeAddress)
-
-      console.log(typeof crowdlendScheme)
-      */
-      votingMachine = await WrapperService.factories.AbsoluteVote.at(
-          votingMachineAddress
-      );
-
-      this.setState({
+      this.setState(async prevState => ({
           userRep: await this.getUserReputation(web3.eth.accounts[0]),
           totalRep: 2,
-      });
+          crowdlendContract: crowdlendContract
+      }));
+
+      console.log(`State Initialized`);
     }
 
     async getUserReputation(account) {
