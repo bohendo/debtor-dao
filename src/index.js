@@ -79,10 +79,13 @@ class DebtorDao extends React.Component {
       const CrowdlendScheme = contract(crowdlendSchemeArtifacts)
       CrowdlendScheme.setProvider(web3.currentProvider)
 
-      const crowdlendScheme = await PeepScheme.at(peepSchemeAddress)
+      const crowdlendScheme = await debtorDaoSchemes.at(crowdlendSchemeAddress)
 
       console.log(typeof crowdlendScheme)
       */
+      votingMachine = await WrapperService.factories.AbsoluteVote.at(
+          votingMachineAddress
+      );
 
       this.setState({
           userRep: await this.getUserReputation(web3.eth.accounts[0]),
