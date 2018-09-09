@@ -4,10 +4,42 @@ import "@daostack/arc/contracts/universalSchemes/UniversalScheme.sol";
 import "@daostack/arc/contracts/universalSchemes/ExecutableInterface.sol";
 import "@daostack/arc/contracts/VotingMachines/IntVoteInterface.sol";
 import "@daostack/arc/contracts/controller/ControllerInterface.sol";
-import "./DebtKernelInterface.sol";
-import "./CrowdfundingTokenInterface.sol";
-import "./CrowdfundingTokenRegistryInterface.sol";
-import "./DebtTokenInterface.sol";
+
+interface ContractRegistry {
+    function collateralizer() returns(address);
+    function debtKernel() returns(address);
+    function debtRegistry() returns(address);
+    function debtToken() returns(address);
+    function repaymentRouter() returns(address);
+    function tokenRegistry() returns(address);
+    function tokenTransferProxy() returns(address);
+}
+
+interface DebtToken {
+    function safeTransferFrom(address _from, address _to, uint _tokenId) external;
+    function generateTokens(address _owner, uint _amount) external returns(bool);
+}
+
+interface CrowdfundingToken {
+    function generateTokens(address _owner, uint _amount) external returns(bool);
+}
+
+interface DebtKernel {
+    function fillDebtOrder(
+        address creditor,
+        address[6] orderAddresses,
+        uint[8] orderValues,
+        bytes32[1] orderBytes32,
+        uint8[3] signaturesV,
+        bytes32[3] signaturesR,
+        bytes32[3] signaturesS
+    ) external returns(bytes32);
+}
+
+interface CrowdfundingTokenRegistry {
+    function crowdfundingTokens(uint _tokenId) external returns(address);
+    function anotherFunction(address foo) external returns(bytes32);
+}
 
 contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
     event NewDebtProposed(
@@ -35,11 +67,8 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
         IntVoteInterface intVote;
     }
 
-    address DebtKernel;
-    address RepaymentRouter;
-    address DebtToken;
-    address CrowdfundingTokenRegistry;
-    address CrowdfundingToken;
+    ContractRegistry public contractRegistry;
+    CrowdfundingTokenRegistry public crowdfundingTokenRegistry;
     address NULL_ADDRESS = address(0);
 
     bytes32 DebtTokenId;
@@ -47,11 +76,9 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
     Parameters public controllerParam;
     mapping(bytes32=>DebtProposal) public organizationsProposals;
 
-    constructor(address _debtKernel, address _repaymentRouter, address _debtToken, address _crowdfundingTokenRegistry) public {
-        DebtKernel = _debtKernel;
-        RepaymentRouter = _repaymentRouter;
-        DebtToken = _debtToken;
-        CrowdfundingTokenRegistry = _crowdfundingTokenRegistry;
+    constructor(address _contractRegistry, address _crowdfundingTokenRegistry) public {
+        contractRegistry = ContractRegistry(_contractRegistry);
+        crowdfundingTokenRegistry = CrowdfundingTokenRegistry(_crowdfundingTokenRegistry);
     }
 
     function setParameters(
@@ -108,13 +135,14 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
             ControllerInterface controller = ControllerInterface(Avatar(avatar).owner());
 
             // Sends a call to the DebtKernel contract to request Dharma debt.
+            address debtKernel = contractRegistry.debtKernel();
             DebtTokenId = controller.genericCall(
-                DebtKernel,
+                debtKernel,
                 abi.encodeWithSelector(
-                    DebtKernelInterface(DebtKernel).fillDebtOrder.selector,
+                    DebtKernel(debtKernel).fillDebtOrder.selector,
                     avatar,
                     [
-                        RepaymentRouter,
+                        address(contractRegistry.repaymentRouter()),
                         avatar,
                         NULL_ADDRESS,
                         proposal.termsContract,
@@ -141,32 +169,25 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
             );
 
             // Sends DebtToken to CrowdFundingRegistry
+            address debtToken = contractRegistry.debtToken();
             controller.genericCall(
-                DebtToken,
+                debtToken,
                 abi.encodeWithSelector(
-                    DebtTokenInterface(DebtToken).safeTransferFrom.selector,
+                    DebtToken(debtToken).safeTransferFrom.selector,
                     avatar,
-                    CrowdfundingTokenRegistry,
+                    address(crowdfundingTokenRegistry),
                     uint256(DebtTokenId)
                 ),
                 avatar
             );
 
-            
-            CrowdfundingToken = controller.genericCall(
-                CrowdfundingTokenRegistry,
-                abi.encodeWithSelector(
-                    CrowdfundingTokenRegistryInterface(CrowdfundingTokenRegistry).crowdfundingTokens.selector,
-                    uint(DebtTokenId)
-                ),
-                avatar
-            ).crowdfundingTokens[DebtTokenId];
+            address crowdfundingToken = crowdfundingTokenRegistry.crowdfundingTokens(uint(DebtTokenId));
 
             // Mint Crowfunding Token for sale
             controller.genericCall(
-                CrowdfundingToken,
+                crowdfundingToken,
                 abi.encodeWithSelector(
-                    CrowdfundingTokenInterface(CrowdfundingToken).generateTokens.selector,
+                    CrowdfundingToken(crowdfundingToken).generateTokens.selector,
                     avatar,
                     proposal.principalAmount
                 ),

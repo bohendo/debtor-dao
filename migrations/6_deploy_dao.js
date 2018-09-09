@@ -5,9 +5,6 @@ var ControllerCreator = artifacts.require("@daostack/arc/ControllerCreator.sol")
 var AbsoluteVote = artifacts.require("@daostack/arc/AbsoluteVote.sol");
 var CrowdLendScheme = artifacts.require("./dao/CrowdLendScheme.sol");
 var ContractRegistry = artifacts.require("ContractRegistry");
-var DebtKernel = artifacts.require("DebtKernel");
-var RepaymentRouter = artifacts.require("RepaymentRouter");
-var DebtToken = artifacts.require("DebtToken");
 var CrowdfundingTokenRegistry = artifacts.require("CrowdfundingTokenRegistry");
 
 const GAS_LIMIT = 5900000;
@@ -74,9 +71,11 @@ module.exports = async function(deployer) {
             true
         );
 
-        await deployer.deploy(CrowdfundingTokenRegistry, ContractRegistry.address);
-        await deployer.deploy(CrowdLendScheme, DebtKernel.address, RepaymentRouter.address, DebtToken.address, CrowdfundingTokenRegistry.address);
-        CrowdLendSchemeInstance = await CrowdLendScheme.deployed();
+        contractRegistry = await ContractRegistry.deployed();
+
+        await deployer.deploy(CrowdfundingTokenRegistry, contractRegistry.address);
+
+        await deployer.deploy(CrowdLendScheme, contractRegistry.address, CrowdfundingTokenRegistry.address);
 
     })
     .then(async function() {
