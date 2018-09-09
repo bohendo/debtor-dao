@@ -5,6 +5,9 @@ import "@daostack/arc/contracts/universalSchemes/ExecutableInterface.sol";
 import "@daostack/arc/contracts/VotingMachines/IntVoteInterface.sol";
 import "@daostack/arc/contracts/controller/ControllerInterface.sol";
 import "./DebtKernelInterface.sol";
+import "./CrowdfundingTokenInterface.sol";
+import "./CrowdfundingTokenRegistryInterface.sol";
+import "./DebtTokenInterface.sol";
 
 contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
     event NewDebtProposed(
@@ -36,9 +39,11 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
     address RepaymentRouter;
     address DebtToken;
     address CrowdfundingTokenRegistry;
-
+    address CrowdfundingToken;
     address NULL_ADDRESS = address(0);
-    address public debtorDaoContract;
+
+    bytes32 DebtTokenId;
+
     Parameters public controllerParam;
     mapping(bytes32=>DebtProposal) public organizationsProposals;
 
@@ -103,7 +108,7 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
             ControllerInterface controller = ControllerInterface(Avatar(avatar).owner());
 
             // Sends a call to the DebtKernel contract to request Dharma debt.
-            bytes32 DebtTokenId = controller.genericCall(
+            DebtTokenId = controller.genericCall(
                 DebtKernel,
                 abi.encodeWithSelector(
                     DebtKernelInterface(DebtKernel).fillDebtOrder.selector,
@@ -139,10 +144,31 @@ contract CrowdLendScheme is UniversalScheme, ExecutableInterface {
             controller.genericCall(
                 DebtToken,
                 abi.encodeWithSelector(
-                    DebtKernelInterface(DebtToken).safeTransferFrom.selector,
+                    DebtTokenInterface(DebtToken).safeTransferFrom.selector,
                     avatar,
                     CrowdfundingTokenRegistry,
                     uint256(DebtTokenId)
+                ),
+                avatar
+            );
+
+            
+            CrowdfundingToken = controller.genericCall(
+                CrowdfundingTokenRegistry,
+                abi.encodeWithSelector(
+                    CrowdfundingTokenRegistryInterface(CrowdfundingTokenRegistry).crowdfundingTokens.selector,
+                    uint(DebtTokenId)
+                ),
+                avatar
+            ).crowdfundingTokens[DebtTokenId];
+
+            // Mint Crowfunding Token for sale
+            controller.genericCall(
+                CrowdfundingToken,
+                abi.encodeWithSelector(
+                    CrowdfundingTokenInterface(CrowdfundingToken).generateTokens.selector,
+                    avatar,
+                    proposal.principalAmount
                 ),
                 avatar
             );
