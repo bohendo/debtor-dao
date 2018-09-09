@@ -30,7 +30,7 @@ class ProposeCrowdlend extends React.Component {
         } else if (target.name == 'token') {
             this.setState({ principalToken: event.target.value });
         } else if (target.name == 'interest') {
-            this.setState({ interest: event.target.value });
+            this.setState({ interestRate: event.target.value });
         }
     }
 
