@@ -40,10 +40,26 @@ class DebtorDao extends React.Component {
 
     voteYes(proposal) {
         console.log(`Voted yes for proposal: ${JSON.stringify(proposal)}`);
+        this.vote(proposal, true)
     }
 
     voteNo(proposal) {
         console.log(`Voted no for proposal: ${JSON.stringify(proposal)}`);
+        this.vote(proposal, false)
+    }
+
+    vote(proposal, yayOrNay) {
+        
+        const networkId = Object.keys(votingMachineArtifacts.networks)[0];
+
+        const voterContract = web3.eth.contract(votingMachineArtifacts.abi).at(this.state.votingAddress);
+
+        voterContract.vote(
+            proposal,
+            yayOrNay ? 1 : 0,
+            this.state.avatarAddress,
+            (err, res) => { console.log(`err: ${err}, res: ${res}`) }
+        )
     }
 
     submitCrowdlend(crowdlend) {
@@ -58,15 +74,13 @@ class DebtorDao extends React.Component {
         const termsContract = '0x0'
         const principalToken = '0x0'
         const principalAmount = '0x0'
-        
+
         const networkId = Object.keys(crowdlendSchemeArtifacts.networks)[0];
         const crowdlendAddress = crowdlendSchemeArtifacts.networks[networkId].address;
 
         const crowdlendContract = web3.eth.contract(crowdlendSchemeArtifacts.abi).at(crowdlendAddress);
 
-        console.log(Object.keys(crowdlendContract.proposeDebt))
-
-        const data = crowdlendContract.proposeDebt(
+        crowdlendContract.proposeDebt(
             this.state.avatarAddress,
             termsParameters,
             termsContract,
