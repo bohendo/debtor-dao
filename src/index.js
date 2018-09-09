@@ -29,13 +29,13 @@ class DebtorDao extends React.Component {
             totalRep: 1,
             crowdlendProposals: [],
         }
-        this.addCrowdlendToList = this.addCrowdlendToList.bind(this);
+        this.submitCrowdlend = this.submitCrowdlend.bind(this);
     }
 
-    addCrowdlendToList(crowdlendProposal) {
+    submitCrowdlend(crowdlend) {
         console.log(`Adding crowdlend to list`)
         this.setState(prevState => ({
-            crowdlendProposals: prevState.crowdlendProposals.concat(crowdlendProposal),
+            crowdlendProposals: prevState.crowdlendProposals.concat(crowdlend.principalAmount),
         }));
     }
 
@@ -76,7 +76,7 @@ class DebtorDao extends React.Component {
                 <p id="daoAddress">DAO Stack avatar: {this.state.avatarAddress}</p>
                 <p id="votingAddress">DAO Stack voter: {this.state.votingMachineAddress}</p>
                 <p id="userRep">{repMessage}</p>
-                <ProposeCrowdlend addCrowdlendToList={this.addCrowdlendToList} />
+                <ProposeCrowdlend submitCrowdlend={this.submitCrowdlend} />
                 <Proposals crowdlendProposals={this.state.crowdlendProposals} />
             </div>
         );  
