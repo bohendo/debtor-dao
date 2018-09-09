@@ -39,7 +39,7 @@ contract CrowdfundingTokenRegistry is ERC721Receiver {
     /**
      * Transfer a Dharma DebtToken to the CrowdfundingTokenRegistry to trigger the creation of a CrowdfundingToken
      */
-    function onERC721Received(address _from, uint256 _tokenId, bytes _data)
+    function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes _data)
         public
         returns (bytes4)
     {
